@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍩 Donut Points Shop — Class 6-1</title>
+<style>
+  :root{
+    --pink:#ff6fa5;
+    --brown:#7a4a2b;
+    --cream:#fff6e9;
+    --gold:#ffb703;
+    --green:#4caf50;
+    --gray:#9e9e9e;
+    --bg1:#fff1e6;
+    --bg2:#ffe0ec;
+    --card-bg:#fff;
+    --text:#7a4a2b;
+    --glow:rgba(0,0,0,0.35);
+  }
+  [data-theme="dark"]{
+    --pink:#4da3ff;
+    --brown:#e8f1ff;
+    --cream:#0d1b2a;
+    --gold:#5ec8ff;
+    --green:#3fa9f5;
+    --gray:#5a6b7d;
+    --bg1:#020c1a;
+    --bg2:#0b1e33;
+    --card-bg:#0f2540;
+    --text:#e8f1ff;
+    --glow:rgba(77,163,255,0.55);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Trebuchet MS', Verdana, sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--text);
+    min-height:100vh;
+    padding-bottom:40px;
+    transition:background 0.3s ease, color 0.3s ease;
+  }
+  .menu-toggle{
+    position:fixed;
+    top:16px;
+    left:16px;
+    padding:10px 16px;
+    border:none;
+    border-radius:12px;
+    background:var(--gold);
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 0 12px var(--glow);
+    z-index:10;
+    font-size:1.1em;
+  }
+  .manage-form{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:20px;
+  }
+  .manage-form label{
+    font-size:0.85em;
+    font-weight:bold;
+    color:var(--text);
+    margin-bottom:-6px;
+  }
+  .manage-form input{
+    padding:8px 10px;
+    border-radius:10px;
+    border:2px solid #eee;
+    font-size:1em;
+  }
+  .emoji-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .emoji-choice{
+    font-size:1.4em;
+    padding:4px 8px;
+    border-radius:8px;
+    border:2px solid transparent;
+    background:var(--bg2);
+    cursor:pointer;
+  }
+  .emoji-choice.selected{
+    border-color:var(--green);
+  }
+  .manage-form button{
+    padding:10px;
+    border:none;
+    border-radius:12px;
+    background:var(--green);
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 0 12px var(--glow);
+  }
+  .custom-item-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid rgba(128,128,128,0.2);
+    font-size:0.9em;
+    color:var(--text);
+  }
+  .custom-item-row .del-btn{
+    background:#e53935;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:4px 8px;
+    cursor:pointer;
+    font-size:0.85em;
+  }
+  .custom-item-row .edit-btn{
+    background:var(--gold);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:4px 8px;
+    cursor:pointer;
+    font-size:0.85em;
+    margin-right:6px;
+  }
+  .custom-item-row .row-buttons{
+    display:flex;
+    flex-shrink:0;
+  }
+  .history-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid rgba(128,128,128,0.2);
+    font-size:0.85em;
+    color:var(--text);
+  }
+  .history-row .amt-positive{color:var(--green); font-weight:bold;}
+  .history-row .amt-negative{color:#e53935; font-weight:bold;}
+  .history-empty{
+    font-size:0.9em;
+    color:var(--gray);
+    text-align:center;
+    margin-top:20px;
+  }
+  .clear-history-btn{
+    display:block;
+    margin:14px auto 0;
+    padding:8px 14px;
+    border:none;
+    border-radius:10px;
+    background:var(--gray);
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+  }
+  .settings-panel{
+    position:fixed;
+    top:0;
+    left:0;
+    height:100%;
+    width:320px;
+    max-width:88vw;
+    background:var(--card-bg);
+    box-shadow:4px 0 20px rgba(0,0,0,0.25);
+    z-index:20;
+    padding:70px 20px 20px;
+    transform:translateX(-100%);
+    transition:transform 0.25s ease;
+    overflow-y:auto;
+  }
+  .settings-panel.open{
+    transform:translateX(0);
+  }
+  .settings-panel h2{
+    margin-top:0;
+    color:var(--pink);
+    font-size:1.2em;
+  }
+  .tab-nav{
+    display:flex;
+    gap:6px;
+    margin-bottom:16px;
+  }
+  .tab-btn{
+    flex:1;
+    padding:8px 4px;
+    border:none;
+    border-radius:10px;
+    background:var(--bg2);
+    color:var(--text);
+    font-weight:bold;
+    cursor:pointer;
+    font-size:0.85em;
+  }
+  .tab-btn.active{
+    background:var(--pink);
+    color:#fff;
+    box-shadow:0 0 10px var(--glow);
+  }
+  .tab-content{
+    display:none;
+  }
+  .tab-content.active{
+    display:block;
+  }
+  .setting-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid rgba(128,128,128,0.2);
+    font-size:0.95em;
+    color:var(--text);
+  }
+  .switch{
+    position:relative;
+    display:inline-block;
+    width:44px;
+    height:24px;
+    flex-shrink:0;
+  }
+  .switch input{opacity:0; width:0; height:0;}
+  .slider-toggle{
+    position:absolute;
+    cursor:pointer;
+    top:0; left:0; right:0; bottom:0;
+    background-color:var(--gray);
+    transition:0.2s;
+    border-radius:24px;
+  }
+  .slider-toggle:before{
+    position:absolute;
+    content:"";
+    height:18px;
+    width:18px;
+    left:3px;
+    bottom:3px;
+    background-color:white;
+    transition:0.2s;
+    border-radius:50%;
+  }
+  .switch input:checked + .slider-toggle{
+    background-color:var(--green);
+  }
+  .switch input:checked + .slider-toggle:before{
+    transform:translateX(20px);
+  }
+  .settings-overlay{
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.4);
+    z-index:15;
+    display:none;
+  }
+  .settings-overlay.open{display:block;}
+  .close-settings{
+    position:absolute;
+    top:16px;
+    right:16px;
+    background:none;
+    border:none;
+    font-size:1.4em;
+    cursor:pointer;
+    color:var(--text);
+  }
+  .class-tag{
+    display:inline-block;
+    margin-top:6px;
+    padding:4px 14px;
+    border-radius:20px;
+    background:var(--pink);
+    color:#fff;
+    font-weight:bold;
+    font-size:0.9em;
+    box-shadow:0 0 10px var(--glow);
+  }
+  header{
+    text-align:center;
+    padding:30px 20px 20px;
+  }
+  header h1{
+    font-size:2.4em;
+    margin:0;
+    color:var(--pink);
+    text-shadow:1px 1px 0 #fff;
+  }
+  header p{
+    margin:6px 0 0;
+    font-size:1.1em;
+  }
+  .balance-bar{
+    max-width:500px;
+    margin:20px auto;
+    background:var(--card-bg);
+    border-radius:20px;
+    padding:16px 24px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    transition:background 0.3s ease;
+  }
+  .balance-bar .points{
+    font-size:1.5em;
+    font-weight:bold;
+    color:var(--gold);
+  }
+  .balance-bar input{
+    width:90px;
+    padding:8px;
+    border-radius:10px;
+    border:2px solid #eee;
+    font-size:1em;
+  }
+  .balance-bar button{
+    padding:8px 14px;
+    border:none;
+    border-radius:10px;
+    background:var(--green);
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 0 12px var(--glow);
+  }
+  .balance-bar button:hover{opacity:0.9;}
+  .reset-btn{
+    background:var(--gray) !important;
+  }
+  .shop-grid{
+    max-width:1000px;
+    margin:30px auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
+    gap:20px;
+    padding:0 20px;
+  }
+  .card{
+    background:var(--card-bg);
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    transition:transform 0.15s ease, background 0.3s ease;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+  .card:hover{transform:translateY(-4px);}
+  .card .emoji{font-size:2.6em;}
+  .card h3{margin:10px 0 4px;color:var(--pink);}
+  .card .price{
+    font-weight:bold;
+    color:var(--gold);
+    margin:8px 0;
+    font-size:1.1em;
+  }
+  .card button{
+    margin-top:10px;
+    padding:10px;
+    border:none;
+    border-radius:12px;
+    background:var(--pink);
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:1em;
+    box-shadow:0 0 14px var(--glow);
+  }
+  .card button:disabled{
+    background:var(--gray);
+    cursor:not-allowed;
+    box-shadow:0 0 8px rgba(0,0,0,0.2);
+  }
+  .card button:not(:disabled):hover{
+    filter:brightness(1.1);
+  }
+  #message{
+    max-width:500px;
+    margin:10px auto;
+    text-align:center;
+    font-weight:bold;
+    min-height:24px;
+  }
+  #message.success{color:var(--green);}
+  #message.error{color:#e53935;}
+  footer{
+    text-align:center;
+    margin-top:30px;
+    font-size:0.85em;
+    color:#a9835f;
+  }
+  .mascot{
+    text-align:center;
+    font-size:3em;
+    margin-top:10px;
+    animation:bounce 2s infinite ease-in-out;
+    cursor:pointer;
+    user-select:none;
+  }
+  @keyframes bounce{
+    0%,100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-10px) rotate(8deg);}
+  }
+  .streak-bar{
+    max-width:500px;
+    margin:10px auto 0;
+    text-align:center;
+    font-size:0.95em;
+    color:var(--text);
+  }
+  .confetti{
+    position:fixed;
+    top:-20px;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    pointer-events:none;
+    z-index:999;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{transform:translateY(110vh) rotate(360deg); opacity:0.3;}
+  }
+  .spin-btn{
+    display:block;
+    margin:16px auto 0;
+    padding:10px 20px;
+    border:none;
+    border-radius:14px;
+    background:var(--gold);
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 0 14px var(--glow);
+  }
+  .spin-btn:hover{filter:brightness(1.1);}
+  .spin-btn:disabled{background:var(--gray); cursor:not-allowed;}
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="openMenu()">☰ Menu</button>
+
+<div class="settings-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+<div class="settings-panel" id="settingsPanel">
+  <button class="close-settings" onclick="closeMenu()">✕</button>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" id="tabBtn-settings" onclick="switchTab('settings')">⚙️ Settings</button>
+    <button class="tab-btn" id="tabBtn-shop" onclick="switchTab('shop')">🛠️ Shop</button>
+    <button class="tab-btn" id="tabBtn-history" onclick="switchTab('history')">📜 History</button>
+  </div>
+
+  <div class="tab-content active" id="tabContent-settings">
+    <h2>⚙️ Settings</h2>
+    <div class="setting-row">
+      Confetti effects
+      <label class="switch">
+        <input type="checkbox" id="setting-confetti" onchange="saveSettings()">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      Mascot donut
+      <label class="switch">
+        <input type="checkbox" id="setting-mascot" onchange="saveSettings(); applySettings();">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      Visit streak counter
+      <label class="switch">
+        <input type="checkbox" id="setting-streak" onchange="saveSettings(); applySettings();">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      Daily spin bonus
+      <label class="switch">
+        <input type="checkbox" id="setting-spin" onchange="saveSettings(); applySettings();">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      Fun random messages
+      <label class="switch">
+        <input type="checkbox" id="setting-funmessages" onchange="saveSettings()">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      Dark mode
+      <label class="switch">
+        <input type="checkbox" id="setting-darkmode" onchange="toggleTheme()">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      Transaction history
+      <label class="switch">
+        <input type="checkbox" id="setting-history" onchange="saveSettings(); applySettings();">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tabContent-shop">
+    <h2 id="shopFormTitle">🛠️ Add a Shop Item</h2>
+    <p style="font-size:0.85em; margin-top:-8px;">Add a new prize, privilege, or event to the shop.</p>
+    <div class="manage-form">
+      <label>Emoji (pick one or type your own)</label>
+      <div class="emoji-row" id="emojiRow"></div>
+      <input type="text" id="customEmojiInput" placeholder="Or type/paste any emoji" maxlength="4">
+
+      <label>Item name</label>
+      <input type="text" id="customName" placeholder="e.g. Class Dance Party">
+
+      <label>Price (donut points)</label>
+      <input type="number" id="customPrice" placeholder="e.g. 30" min="1">
+
+      <button id="shopFormSubmitBtn" onclick="addCustomProduct()">➕ Add to Shop</button>
+      <button id="shopFormCancelBtn" class="reset-btn" style="display:none;" onclick="cancelEdit()">Cancel Edit</button>
+    </div>
+    <h2 style="font-size:1.05em;">All Shop Items</h2>
+    <div id="customItemsList"></div>
+  </div>
+
+  <div class="tab-content" id="tabContent-history">
+    <h2>📜 Transaction History</h2>
+    <div id="historyList"></div>
+    <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
+  </div>
+</div>
+
+<header>
+  <h1>🍩 Donut Points Shop</h1>
+  <p>Earn points for great choices — spend them here!</p>
+  <div class="class-tag">Class 6-1</div>
+</header>
+
+<div class="mascot" id="mascot" title="Click me!" onclick="mascotWiggle()">🍩</div>
+
+<div class="streak-bar" id="streakBar"></div>
+
+<div class="balance-bar">
+  <div>Your Balance: <span class="points" id="balance">0</span> 🍩</div>
+  <div>
+    <input type="number" id="addAmount" placeholder="Add pts" min="1">
+    <button onclick="addPoints()">Add</button>
+    <input type="number" id="removeAmount" placeholder="Remove pts" min="1">
+    <button class="reset-btn" onclick="removePoints()">Remove</button>
+    <button class="reset-btn" onclick="resetPoints()">Reset</button>
+  </div>
+</div>
+
+<div id="message"></div>
+
+<button class="spin-btn" id="spinBtn" onclick="spinWheel()">🎡 Daily Spin (free bonus!)</button>
+
+<div class="shop-grid" id="shopGrid"></div>
+
+<footer>made with love,AARON</footer>
+
+<script>
+  const defaultProducts = [
+    { name: "Movie & Chill", emoji: "🎬", price: 10 },
+    { name: "Sticker Pack", emoji: "⭐", price: 15 },
+    { name: "Game Day", emoji: "🎮", price: 60 },
+    { name: "Pizza Party (class share)", emoji: "🍕", price: 80 },
+    { name: "Tech Time (iPad/Chromebook)", emoji: "💻", price: 100 },
+    { name: "Teacher for a Day", emoji: "🍎", price: 150 },
+    { name: "Free Outside Time", emoji: "🌤️", price: 15 },
+    { name: "Pajama Day", emoji: "🛌", price: 25 },
+    { name: "Bring Your Own Device Day", emoji: "💻", price: 50 },
+    { name: "Trip to the Park", emoji: "🌳", price: 60 },
+    { name: "Scavenger Hunt", emoji: "🔍", price: 70 },
+    { name: "Glow-in-the-Dark Party", emoji: "🌟", price: 90 },
+    { name: "Play Outside With Another Class", emoji: "🤝", price: 75 },
+  ];
+
+  const ITEMS_TO_REMOVE = [
+    "Mechanical Pencil", "Cute Eraser Topper", "Free Mystery Item",
+    "Candy Salad", "Extra Break Time", "Extra Recess (5 min)",
+    "Outside Movie", "Homework Pass", "Lunch with a Friend", "No Homework Night",
+  ];
+
+  const ITEMS_RENAME_MAP = {
+    "pick the class game": "Game Day",
+  };
+
+  const ITEMS_KEY = "donutPointsItems";
+  const ITEMS_VERSION_KEY = "donutPointsItemsVersion";
+  const CURRENT_ITEMS_VERSION = 5; // bump this whenever defaultProducts gains, loses, or renames entries
+
+  function getItems() {
+    const raw = localStorage.getItem(ITEMS_KEY);
+    let items;
+
+    if (!raw) {
+      // First run: seed storage with the default products, each given a stable id
+      items = defaultProducts.map((p, i) => ({ ...p, id: 1000 + i }));
+      localStorage.setItem(ITEMS_KEY, JSON.stringify(items));
+      localStorage.setItem(ITEMS_VERSION_KEY, CURRENT_ITEMS_VERSION);
+      return items;
+    }
+
+    items = JSON.parse(raw);
+
+    // One-time migration: append any new default items this browser doesn't have yet,
+    // rename any that were renamed, and drop any that were removed from defaultProducts,
+    // without touching anything else the teacher has already edited or added.
+    const seenVersion = parseInt(localStorage.getItem(ITEMS_VERSION_KEY) || "1", 10);
+    if (seenVersion < CURRENT_ITEMS_VERSION) {
+      items = items.map((i) => {
+        const renamed = ITEMS_RENAME_MAP[i.name.toLowerCase()];
+        return renamed ? { ...i, name: renamed } : i;
+      });
+
+      const existingNames = new Set(items.map((i) => i.name.toLowerCase()));
+      let nextId = Date.now();
+      defaultProducts.forEach((p) => {
+        if (!existingNames.has(p.name.toLowerCase())) {
+          items.push({ ...p, id: nextId++ });
+        }
+      });
+
+      const removeSet = new Set(ITEMS_TO_REMOVE.map((n) => n.toLowerCase()));
+      items = items.filter((i) => !removeSet.has(i.name.toLowerCase()));
+
+      localStorage.setItem(ITEMS_KEY, JSON.stringify(items));
+      localStorage.setItem(ITEMS_VERSION_KEY, CURRENT_ITEMS_VERSION);
+    }
+
+    return items;
+  }
+
+  function saveItems(items) {
+    localStorage.setItem(ITEMS_KEY, JSON.stringify(items));
+  }
+
+  const SETTINGS_KEY = "donutPointsSettings";
+  const defaultSettings = {
+    confetti: true,
+    mascot: true,
+    streak: true,
+    spin: true,
+    funmessages: true,
+    darkmode: false,
+    history: true,
+  };
+
+  function getSettings() {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    return raw ? { ...defaultSettings, ...JSON.parse(raw) } : { ...defaultSettings };
+  }
+
+  function saveSettings() {
+    const s = {
+      confetti: document.getElementById("setting-confetti").checked,
+      mascot: document.getElementById("setting-mascot").checked,
+      streak: document.getElementById("setting-streak").checked,
+      spin: document.getElementById("setting-spin").checked,
+      funmessages: document.getElementById("setting-funmessages").checked,
+      darkmode: document.documentElement.getAttribute("data-theme") === "dark",
+      history: document.getElementById("setting-history").checked,
+    };
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  }
+
+  function loadSettingsToUI() {
+    const s = getSettings();
+    document.getElementById("setting-confetti").checked = s.confetti;
+    document.getElementById("setting-mascot").checked = s.mascot;
+    document.getElementById("setting-streak").checked = s.streak;
+    document.getElementById("setting-spin").checked = s.spin;
+    document.getElementById("setting-funmessages").checked = s.funmessages;
+    document.getElementById("setting-darkmode").checked = s.darkmode;
+    document.getElementById("setting-history").checked = s.history;
+  }
+
+  function applySettings() {
+    const s = getSettings();
+    document.getElementById("mascot").style.display = s.mascot ? "" : "none";
+    document.getElementById("streakBar").style.display = s.streak ? "" : "none";
+    document.getElementById("spinBtn").style.display = s.spin ? "" : "none";
+  }
+
+  function openMenu(tab) {
+    document.getElementById("settingsPanel").classList.add("open");
+    document.getElementById("menuOverlay").classList.add("open");
+    switchTab(tab || "settings");
+  }
+
+  function closeMenu() {
+    document.getElementById("settingsPanel").classList.remove("open");
+    document.getElementById("menuOverlay").classList.remove("open");
+  }
+
+  function switchTab(tab) {
+    ["settings", "shop", "history"].forEach((t) => {
+      document.getElementById("tabContent-" + t).classList.toggle("active", t === tab);
+      document.getElementById("tabBtn-" + t).classList.toggle("active", t === tab);
+    });
+    if (tab === "shop") renderCustomItemsList();
+    if (tab === "history") renderHistory();
+  }
+
+  // ---------- Shop items (default + custom, all editable) ----------
+  const emojiChoices = ["🎉","🎮","🎨","🎤","🍦","🎬","🏆","🎁","🧩","⚽","🎪","🕹️","📚","🎧","🚀","🌟"];
+  let selectedEmoji = emojiChoices[0];
+  let editingId = null;
+
+  function renderEmojiPicker() {
+    const row = document.getElementById("emojiRow");
+    row.innerHTML = "";
+    emojiChoices.forEach((e) => {
+      const span = document.createElement("span");
+      span.className = "emoji-choice" + (e === selectedEmoji ? " selected" : "");
+      span.textContent = e;
+      span.onclick = () => {
+        selectedEmoji = e;
+        document.getElementById("customEmojiInput").value = "";
+        renderEmojiPicker();
+      };
+      row.appendChild(span);
+    });
+  }
+
+  function addCustomProduct() {
+    const typed = document.getElementById("customEmojiInput").value.trim();
+    const emoji = typed || selectedEmoji;
+    const name = document.getElementById("customName").value.trim();
+    const price = parseInt(document.getElementById("customPrice").value, 10);
+
+    if (!name) {
+      showMessage("Give the prize or event a name.", "error");
+      return;
+    }
+    if (!price || price <= 0) {
+      showMessage("Enter a valid price in points.", "error");
+      return;
+    }
+
+    const items = getItems();
+
+    if (editingId !== null) {
+      const idx = items.findIndex((i) => i.id === editingId);
+      if (idx !== -1) {
+        items[idx] = { ...items[idx], name, price, emoji };
+        saveItems(items);
+        showMessage(`Updated "${name}"!`, "success");
+      }
+      cancelEdit();
+    } else {
+      items.push({ id: Date.now(), name, price, emoji });
+      saveItems(items);
+      showMessage(`Added "${name}" to the shop!`, "success");
+    }
+
+    document.getElementById("customName").value = "";
+    document.getElementById("customPrice").value = "";
+    document.getElementById("customEmojiInput").value = "";
+
+    renderShop();
+    renderCustomItemsList();
+  }
+
+  function startEdit(id) {
+    const item = getItems().find((i) => i.id === id);
+    if (!item) return;
+    editingId = id;
+    document.getElementById("customName").value = item.name;
+    document.getElementById("customPrice").value = item.price;
+    document.getElementById("customEmojiInput").value = item.emoji;
+    document.getElementById("shopFormTitle").textContent = "✏️ Edit Shop Item";
+    document.getElementById("shopFormSubmitBtn").textContent = "💾 Save Changes";
+    document.getElementById("shopFormCancelBtn").style.display = "";
+    document.getElementById("customName").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function cancelEdit() {
+    editingId = null;
+    document.getElementById("customName").value = "";
+    document.getElementById("customPrice").value = "";
+    document.getElementById("customEmojiInput").value = "";
+    document.getElementById("shopFormTitle").textContent = "🛠️ Add a Shop Item";
+    document.getElementById("shopFormSubmitBtn").textContent = "➕ Add to Shop";
+    document.getElementById("shopFormCancelBtn").style.display = "none";
+  }
+
+  function deleteCustomProduct(id) {
+    const items = getItems().filter((i) => i.id !== id);
+    saveItems(items);
+    if (editingId === id) cancelEdit();
+    renderShop();
+    renderCustomItemsList();
+  }
+
+  function renderCustomItemsList() {
+    const list = document.getElementById("customItemsList");
+    const items = getItems();
+    list.innerHTML = "";
+    if (items.length === 0) {
+      list.innerHTML = '<div class="history-empty">No shop items yet.</div>';
+      return;
+    }
+    items
+      .slice()
+      .sort((a, b) => a.price - b.price)
+      .forEach((i) => {
+        const row = document.createElement("div");
+        row.className = "custom-item-row";
+        row.innerHTML = `
+          <span>${i.emoji} ${i.name} — ${i.price} 🍩</span>
+          <span class="row-buttons">
+            <button class="edit-btn" onclick="startEdit(${i.id})">Edit</button>
+            <button class="del-btn" onclick="deleteCustomProduct(${i.id})">Delete</button>
+          </span>
+        `;
+        list.appendChild(row);
+      });
+  }
+
+  // ---------- Transaction history ----------
+  const HISTORY_KEY = "donutPointsHistory";
+
+  function logHistory(entry) {
+    if (!getSettings().history) return;
+    const history = getHistoryLog();
+    history.unshift({ ...entry, time: new Date().toLocaleString() });
+    if (history.length > 100) history.pop();
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }
+
+  function getHistoryLog() {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }
+
+  function clearHistory() {
+    if (confirm("Clear all transaction history?")) {
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
+    }
+  }
+
+  function renderHistory() {
+    const list = document.getElementById("historyList");
+    const history = getHistoryLog();
+    list.innerHTML = "";
+    if (history.length === 0) {
+      list.innerHTML = '<div class="history-empty">No transactions yet.</div>';
+      return;
+    }
+    history.forEach((h) => {
+      const row = document.createElement("div");
+      row.className = "history-row";
+      const amtClass = h.amount >= 0 ? "amt-positive" : "amt-negative";
+      const amtText = h.amount >= 0 ? `+${h.amount}` : `${h.amount}`;
+      row.innerHTML = `
+        <span>${h.label}<br><small>${h.time}</small></span>
+        <span class="${amtClass}">${amtText}</span>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  const STORAGE_KEY = "donutPointsBalance";
+  const STREAK_KEY = "donutPointsStreak";
+  const LASTVISIT_KEY = "donutPointsLastVisit";
+  const SPIN_KEY = "donutPointsLastSpin";
+
+  const funMessages = [
+    "You redeemed: {name}! Enjoy 🎉",
+    "Nice pick! {name} is yours 🍩",
+    "Boom! {name} unlocked 🚀",
+    "Sweet choice — {name} incoming! 🍬",
+    "You earned it! Enjoy {name} 🌟",
+    "{name} redeemed like a champ 🏆",
+  ];
+
+  const confettiColors = ["#ff6fa5", "#ffb703", "#4caf50", "#4da3ff", "#ffffff"];
+
+  function launchConfetti() {
+    if (!getSettings().confetti) return;
+    for (let i = 0; i < 40; i++) {
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+      c.style.animationDuration = (2 + Math.random() * 2) + "s";
+      c.style.width = c.style.height = (6 + Math.random() * 8) + "px";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }
+  }
+
+  function mascotWiggle() {
+    if (!getSettings().mascot) return;
+    const m = document.getElementById("mascot");
+    m.style.animation = "none";
+    void m.offsetWidth;
+    m.style.animation = "bounce 0.4s ease-in-out 3";
+    const phrases = ["Yum!", "Keep it up!", "You're doing great!", "Donut worry, be happy!", "🍩✨"];
+    showMessage(phrases[Math.floor(Math.random() * phrases.length)], "success");
+  }
+
+  function updateStreak() {
+    if (!getSettings().streak) return;
+    const today = new Date().toDateString();
+    const last = localStorage.getItem(LASTVISIT_KEY);
+    let streak = parseInt(localStorage.getItem(STREAK_KEY) || "0", 10);
+    if (last !== today) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      streak = last === yesterday.toDateString() ? streak + 1 : 1;
+      localStorage.setItem(STREAK_KEY, streak);
+      localStorage.setItem(LASTVISIT_KEY, today);
+    }
+    document.getElementById("streakBar").textContent =
+      `🔥 ${streak}-day visit streak! Keep coming back!`;
+  }
+
+  function spinWheel() {
+    if (!getSettings().spin) return;
+    const today = new Date().toDateString();
+    const lastSpin = localStorage.getItem(SPIN_KEY);
+    const btn = document.getElementById("spinBtn");
+    if (lastSpin === today) {
+      showMessage("You already spun today — come back tomorrow!", "error");
+      return;
+    }
+    const rewards = [2, 5, 5, 10, 10, 15, 20, 25];
+    const won = rewards[Math.floor(Math.random() * rewards.length)];
+    localStorage.setItem(SPIN_KEY, today);
+    setBalance(getBalance() + won);
+    launchConfetti();
+    showMessage(`🎡 The wheel landed on +${won} points!`, "success");
+    logHistory({ label: "Daily spin bonus", amount: won });
+    btn.disabled = true;
+    btn.textContent = "🎡 Come back tomorrow!";
+  }
+
+  function checkSpinAvailable() {
+    const today = new Date().toDateString();
+    const btn = document.getElementById("spinBtn");
+    if (localStorage.getItem(SPIN_KEY) === today) {
+      btn.disabled = true;
+      btn.textContent = "🎡 Come back tomorrow!";
+    }
+  }
+
+  function getBalance() {
+    const val = localStorage.getItem(STORAGE_KEY);
+    return val === null ? 0 : parseInt(val, 10);
+  }
+
+  function setBalance(val) {
+    localStorage.setItem(STORAGE_KEY, val);
+    document.getElementById("balance").textContent = val;
+    renderShop();
+  }
+
+  function showMessage(text, type) {
+    const el = document.getElementById("message");
+    el.textContent = text;
+    el.className = type;
+    setTimeout(() => { el.textContent = ""; el.className = ""; }, 2500);
+  }
+
+  function addPoints() {
+    const input = document.getElementById("addAmount");
+    const amount = parseInt(input.value, 10);
+    if (!amount || amount <= 0) {
+      showMessage("Enter a valid number of points to add.", "error");
+      return;
+    }
+    setBalance(getBalance() + amount);
+    input.value = "";
+    showMessage(`Added ${amount} points!`, "success");
+    logHistory({ label: "Points added", amount: amount });
+  }
+
+  function removePoints() {
+    const input = document.getElementById("removeAmount");
+    const amount = parseInt(input.value, 10);
+    if (!amount || amount <= 0) {
+      showMessage("Enter a valid number of points to remove.", "error");
+      return;
+    }
+    const balance = getBalance();
+    const newBalance = Math.max(0, balance - amount);
+    const actuallyRemoved = balance - newBalance;
+    setBalance(newBalance);
+    input.value = "";
+    if (amount > balance) {
+      showMessage(`Removed ${balance} points (balance floored at 0).`, "success");
+    } else {
+      showMessage(`Removed ${amount} points.`, "success");
+    }
+    logHistory({ label: "Points removed", amount: -actuallyRemoved });
+  }
+
+  function resetPoints() {
+    if (confirm("Reset balance to 0?")) {
+      const balance = getBalance();
+      setBalance(0);
+      showMessage("Balance reset.", "success");
+      logHistory({ label: "Balance reset", amount: -balance });
+    }
+  }
+
+  function buy(product) {
+    const balance = getBalance();
+    if (balance < product.price) {
+      showMessage(`Not enough points for ${product.name}!`, "error");
+      return;
+    }
+    setBalance(balance - product.price);
+    launchConfetti();
+    if (getSettings().funmessages) {
+      const template = funMessages[Math.floor(Math.random() * funMessages.length)];
+      showMessage(template.replace("{name}", product.name), "success");
+    } else {
+      showMessage(`Redeemed: ${product.name}`, "success");
+    }
+    logHistory({ label: `Redeemed: ${product.emoji} ${product.name}`, amount: -product.price });
+  }
+
+  function renderShop() {
+    const grid = document.getElementById("shopGrid");
+    const balance = getBalance();
+    const allProducts = getItems();
+    grid.innerHTML = "";
+    allProducts
+      .slice()
+      .sort((a, b) => a.price - b.price)
+      .forEach((p) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        const canAfford = balance >= p.price;
+        card.innerHTML = `
+          <div>
+            <div class="emoji">${p.emoji}</div>
+            <h3>${p.name}</h3>
+            <div class="price">${p.price} 🍩</div>
+          </div>
+          <button ${canAfford ? "" : "disabled"} onclick='buy(${JSON.stringify(p)})'>
+            ${canAfford ? "Redeem" : "Not enough points"}
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+  }
+
+  const THEME_KEY = "donutPointsTheme";
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem(THEME_KEY, theme);
+    const darkToggle = document.getElementById("setting-darkmode");
+    if (darkToggle) darkToggle.checked = theme === "dark";
+    saveSettings();
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    applyTheme(current === "dark" ? "light" : "dark");
+  }
+
+  loadSettingsToUI();
+  applyTheme(localStorage.getItem(THEME_KEY) || "light");
+  applySettings();
+  renderEmojiPicker();
+
+  document.getElementById("balance").textContent = getBalance();
+  renderShop();
+  updateStreak();
+  checkSpinAvailable();
+</script>
+
+</body>
+</html>
